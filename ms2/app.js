@@ -27,7 +27,7 @@ amqp.connect(amqpUrl, function(error0, connection) {
             });
 
             console.log("Send AMQP message")
-            channel.sendToQueue(incomingQueueName, Buffer.from(msg));
+            channel.sendToQueue(incomingQueueName, Buffer.from(msg.content.toString() + " PROCESSED"));
             console.log(" [x] Sent %s", msg);
         }, {
             noAck: true
