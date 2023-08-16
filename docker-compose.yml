@@ -55,7 +55,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     volumes:
-      - ./grafana/provisioning-datasources.yml:/etc/grafana/provisioning/datasources/provisioning-datasources.yml
+      - ./monitoring/provisioning-datasources.yml:/etc/grafana/provisioning/datasources/provisioning-datasources.yml
     ports:
       - "3101:3000"
     networks:
