@@ -1,44 +1,75 @@
 const http = require("http");
+const {createLogger, transports} = require("winston");
+const LokiTransport = require("winston-loki");
 var amqp = require('amqplib/callback_api');
 const port = 3000
 const amqpUrl = "amqp://rabbitmq"
 const sendingQueueName = "requests"
 const incomingQueueName = "responses"
 
-http.createServer(function(request,response){
+const logger = createLogger({
+    transports: [
+        new LokiTransport({
+            host: "http://localhost:3100",
+            interval: 5,
+            labels: {
+                job: 'nodejs-ms1'
+            }
+        })
+    ]
+})
 
-    amqp.connect(amqpUrl, function(error0, connection) {
-        console.log("Start AMQP connect")
+http.createServer(function (request, response) {
+
+    amqp.connect(amqpUrl, function (error0, connection) {
+        logger.log({
+            level: 'info',
+            message: 'Start AMQP connect'
+        });
         if (error0) {
             throw error0;
         }
-        connection.createChannel(function(error1, channel) {
+        connection.createChannel(function (error1, channel) {
             if (error1) {
                 throw error1;
             }
             const msg = request.method;
-            console.log(`Request method is ${msg}`)
 
+            logger.log({
+                level: 'info',
+                message: `Request method is ${msg}`
+            });
 
             channel.assertQueue(sendingQueueName, {
                 durable: false
             });
 
-            console.log("Send AMQP message")
+
+            logger.log({
+                level: 'info',
+                message: "Send AMQP message"
+            });
+
             channel.sendToQueue(sendingQueueName, Buffer.from(msg));
-            console.log(" [x] Sent %s", msg);
-            setTimeout(function() {
-                console.log("Stop AMQP connection")
+            logger.log({
+                level: 'debug',
+                message: `[x] Sent ${msg}`
+            });
+            setTimeout(function () {
+                logger.log({
+                    level: 'info',
+                    message: "Stop AMQP connection"
+                });
                 connection.close();
             }, 0);
         });
     });
 
-    amqp.connect(amqpUrl, function(error0, connection) {
+    amqp.connect(amqpUrl, function (error0, connection) {
         if (error0) {
             throw error0;
         }
-        connection.createChannel(function(error1, channel) {
+        connection.createChannel(function (error1, channel) {
             if (error1) {
                 throw error1;
             }
@@ -47,10 +78,16 @@ http.createServer(function(request,response){
                 durable: false
             });
 
-            console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", incomingQueueName);
+            logger.log({
+                level: 'info',
+                message: ` [*] Waiting for messages in ${incomingQueueName}. To exit press CTRL+C`
+            });
 
-            channel.consume(incomingQueueName, function(msg) {
-                console.log(" [x] Received %s", msg.content.toString());
+            channel.consume(incomingQueueName, function (msg) {
+                logger.log({
+                    level: 'debug',
+                    message: ` [x] Received ${msg.content.toString()}`
+                });
                 response.setHeader("Content-Type", "text/plain; charset=utf-8;");
                 response.write(msg.content.toString())
                 response.end();
@@ -60,6 +97,9 @@ http.createServer(function(request,response){
         });
     });
 
-}).listen(port, "0.0.0.0",function(){
-    console.log(`Сервер начал прослушивание запросов на порту ${port}`);
+}).listen(port, "0.0.0.0", function () {
+    logger.log({
+        level: 'info',
+        message: `Сервер начал прослушивание запросов на порту ${port}`
+    });
 });
