@@ -1,6 +1,7 @@
 const http = require("http");
 var amqp = require('amqplib/callback_api');
 const port = 3001
+const amqpUrl = "amqp://rabbitmq"
 const sendingQueueName = "requests"
 const incomingQueueName = "responses"
 
