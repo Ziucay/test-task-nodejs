@@ -16,7 +16,8 @@ http.createServer(function(request,response){
             if (error1) {
                 throw error1;
             }
-            var msg = request.body;
+            const msg = request.body;
+            console.log(`Request body is ${msg}`)
 
 
             channel.assertQueue(sendingQueueName, {
