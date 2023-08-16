@@ -22,6 +22,8 @@ services:
       - "3000:3000"
     networks:
       - apps
+    depends_on:
+      - rabbitmq
 
   ms2:
     container_name: ms2
@@ -31,6 +33,8 @@ services:
       - "3001:3001"
     networks:
       - apps
+    depends_on:
+      - rabbitmq
 
   loki:
     container_name: loki
