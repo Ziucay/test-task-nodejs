@@ -1,0 +1,14 @@
+{
+  "name": "modulesapp",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  }
+}

@@ -13,10 +13,18 @@ services:
     networks:
       - apps
 
-  app:
-    build: ./
+  ms1:
+    build: ./ms1
     restart: always
     ports:
       - "3000:3000"
+    networks:
+      - apps
+
+  ms2:
+    build: ./ms2
+    restart: always
+    ports:
+      - "3001:3001"
     networks:
       - apps
