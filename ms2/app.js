@@ -1,38 +1,42 @@
 const http = require("http");
 var amqp = require('amqplib/callback_api');
+const port = 3001
+const sendingQueueName = "requests"
+const incomingQueueName = "responses"
 
-http.createServer(function(request,response){
-
-    amqp.connect('amqp://rabbitmq', function(error0, connection) {
-        if (error0) {
-            throw error0;
+amqp.connect(amqpUrl, function(error0, connection) {
+    if (error0) {
+        throw error0;
+    }
+    connection.createChannel(function(error1, channel) {
+        if (error1) {
+            throw error1;
         }
-        connection.createChannel(function(error1, channel) {
-            if (error1) {
-                throw error1;
-            }
-            var queue = 'hello';
-            var msg = 'Hello world';
 
-            channel.assertQueue(queue, {
+        channel.assertQueue(sendingQueueName, {
+            durable: false
+        });
+
+        console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", sendingQueueName);
+
+        channel.consume(sendingQueueName, function(msg) {
+            console.log(" [x] Received %s", msg.content.toString());
+            channel.assertQueue(incomingQueueName, {
                 durable: false
             });
 
-            channel.sendToQueue(queue, Buffer.from(msg));
+            console.log("Send AMQP message")
+            channel.sendToQueue(incomingQueueName, Buffer.from(msg));
             console.log(" [x] Sent %s", msg);
-            setTimeout(function() {
-                connection.close();
-                //process.exit(0)
-            }, 500);
+        }, {
+            noAck: true
         });
     });
+});
 
 
-
-    response.setHeader("Content-Type", "text/plain; charset=utf-8;");
-    response.write("Hello NodeJS changed!")
-    response.end();
-
-}).listen(3001, "0.0.0.0",function(){
-    console.log("Сервер начал прослушивание запросов на порту 3000");
+http.createServer(function(request,response){
+    response.end()
+}).listen(port, "0.0.0.0",function(){
+    console.log(`Сервер начал прослушивание запросов на порту ${port}`);
 });
