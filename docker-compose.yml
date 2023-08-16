@@ -13,7 +13,7 @@ services:
     networks:
       - apps
 
-  front:
+  app:
     build: ./
     restart: always
     ports:
