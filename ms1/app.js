@@ -27,18 +27,12 @@ http.createServer(function (request, response) {
             message: 'Start AMQP connect'
         });
         if (error0) {
-            logger.log({
-                level: 'error',
-                message: `${error0.toString()}`
-            });
+            logger.error(error0)
             throw error0;
         }
         connection.createChannel(function (error1, channel) {
             if (error1) {
-                logger.log({
-                    level: 'error',
-                    message: `${error1.toString()}`
-                });
+                logger.error(error1)
                 throw error1;
             }
             const msg = request.method;
@@ -59,10 +53,7 @@ http.createServer(function (request, response) {
             });
 
             channel.sendToQueue(sendingQueueName, Buffer.from(msg));
-            logger.log({
-                level: 'debug',
-                message: `[x] Sent ${msg}`
-            });
+            logger.debug(`[x] Sent ${msg}`)
             setTimeout(function () {
                 logger.log({
                     level: 'info',
@@ -75,14 +66,12 @@ http.createServer(function (request, response) {
 
     amqp.connect(amqpUrl, function (error0, connection) {
         if (error0) {
-            logger.log({
-                level: 'error',
-                message: `${error0.toString()}`
-            });
+            logger.error(error0)
             throw error0;
         }
         connection.createChannel(function (error1, channel) {
             if (error1) {
+                logger.error(error1)
                 throw error1;
             }
 
@@ -96,10 +85,7 @@ http.createServer(function (request, response) {
             });
 
             channel.consume(incomingQueueName, function (msg) {
-                logger.log({
-                    level: 'debug',
-                    message: ` [x] Received ${msg.content.toString()}`
-                });
+                logger.debug(` [x] Received ${msg.content.toString()}`)
                 response.setHeader("Content-Type", "text/plain; charset=utf-8;");
                 response.write(msg.content.toString())
                 response.end();

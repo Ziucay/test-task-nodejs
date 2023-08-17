@@ -21,18 +21,12 @@ const logger = createLogger({
 
 amqp.connect(amqpUrl, function (error0, connection) {
     if (error0) {
-        logger.log({
-            level: 'error',
-            message: `${error0.toString()}`
-        });
+        logger.error(error0)
         throw error0;
     }
     connection.createChannel(function (error1, channel) {
         if (error1) {
-            logger.log({
-                level: 'error',
-                message: `${error1.toString()}`
-            });
+            logger.error(error1)
             throw error1;
         }
 
@@ -46,24 +40,19 @@ amqp.connect(amqpUrl, function (error0, connection) {
         });
 
         channel.consume(sendingQueueName, function (msg) {
-            logger.log({
-                level: 'debug',
-                message: `[x] Received ${msg.content.toString()}`
-            });
+            logger.debug(`[x] Received ${msg.content.toString()}`)
 
             channel.assertQueue(incomingQueueName, {
                 durable: false
             });
 
+            
             logger.log({
                 level: 'info',
                 message: `Send AMQP message`
             });
             channel.sendToQueue(incomingQueueName, Buffer.from(msg.content.toString() + " PROCESSED"));
-            logger.log({
-                level: 'debug',
-                message: `[x] Sent ${msg}`
-            });
+            logger.debug(`[x] Sent ${msg}`)
         }, {
             noAck: true
         });
