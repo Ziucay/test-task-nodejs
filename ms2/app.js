@@ -1,6 +1,6 @@
 const http = require("http");
-var amqp = require('amqplib/callback_api');
-const {createLogger, transports} = require("winston");
+let amqp = require('amqplib/callback_api');
+const {createLogger} = require("winston");
 const LokiTransport = require("winston-loki");
 const port = 3001
 const amqpUrl = "amqp://rabbitmq"
@@ -64,10 +64,5 @@ amqp.connect(amqpUrl, function (error0, connection) {
 
 
 http.createServer(function (request, response) {
-    response.end()
 }).listen(port, "0.0.0.0", function () {
-    logger.log({
-        level: 'info',
-        message: `Сервер начал прослушивание запросов на порту ${port}`
-    });
 });
