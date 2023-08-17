@@ -1,6 +1,6 @@
 const http = require("http");
 let amqp = require('amqplib/callback_api');
-const {createLogger} = require("winston");
+const {createLogger, winston} = require("winston");
 const LokiTransport = require("winston-loki");
 const port = 3001
 const amqpUrl = "amqp://rabbitmq"
@@ -15,7 +15,8 @@ const logger = createLogger({
             labels: {
                 job: 'nodejs-ms2'
             }
-        })
+        }),
+        new winston.transports.Console()
     ]
 })
 
@@ -46,7 +47,7 @@ amqp.connect(amqpUrl, function (error0, connection) {
                 durable: false
             });
 
-            
+
             logger.log({
                 level: 'info',
                 message: `Send AMQP message`
