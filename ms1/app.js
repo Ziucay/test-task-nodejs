@@ -1,5 +1,5 @@
 const http = require("http");
-const {createLogger, winston} = require("winston");
+const {createLogger, transports} = require("winston");
 const LokiTransport = require("winston-loki");
 var amqp = require('amqplib/callback_api');
 const port = 3000
@@ -16,7 +16,7 @@ const logger = createLogger({
                 job: 'nodejs-ms1'
             }
         }),
-        new winston.transports.Console()
+        new transports.Console()
     ]
 })
 
