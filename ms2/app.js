@@ -21,10 +21,18 @@ const logger = createLogger({
 
 amqp.connect(amqpUrl, function (error0, connection) {
     if (error0) {
+        logger.log({
+            level: 'error',
+            message: `${error0.toString()}`
+        });
         throw error0;
     }
     connection.createChannel(function (error1, channel) {
         if (error1) {
+            logger.log({
+                level: 'error',
+                message: `${error1.toString()}`
+            });
             throw error1;
         }
 
