@@ -19,10 +19,10 @@ Instruction for Ubuntu OS
 ## Screenshots
 
 These are examples of requests
-![](../../../Desktop/GET.jpg)
-![](../../../Desktop/POST.jpg)
+![](assets/GET.jpg)
+![](assets/POST.jpg)
 
 And this is the screenshot from Grafana.
 It works on port 3101
 
-![](../../../Desktop/Grafana.jpg)
+![](assets/Grafana.jpg)
