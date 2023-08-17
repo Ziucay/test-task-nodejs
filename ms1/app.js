@@ -17,16 +17,14 @@ const logger = createLogger({
             }
         }),
         new transports.Console()
-    ]
+    ],
+    handleExceptions: true,
 })
 
 http.createServer(function (request, response) {
 
     amqp.connect(amqpUrl, function (error0, connection) {
-        logger.log({
-            level: 'info',
-            message: 'Start AMQP connect'
-        });
+        logger.log({ level: 'info', message: 'Start AMQP connect'});
         if (error0) {
             logger.error(error0)
             throw error0;
@@ -38,38 +36,20 @@ http.createServer(function (request, response) {
             }
             const msg = request.method;
 
-            logger.log({
-                level: 'info',
-                message: `Request method is ${msg}`
-            });
+            logger.log({level: 'info', message: `Request method is ${msg}`});
 
             channel.assertQueue(sendingQueueName, {
                 durable: false
             });
 
 
-            logger.log({
-                level: 'info',
-                message: "Send AMQP message"
-            });
+            logger.log({level: 'info', message: "Send AMQP message"});
 
             channel.sendToQueue(sendingQueueName, Buffer.from(msg));
             logger.debug(`[x] Sent ${msg}`)
-            setTimeout(function () {
-                logger.log({
-                    level: 'info',
-                    message: "Stop AMQP connection"
-                });
-                connection.close();
-            }, 0);
+            channel.close()
         });
-    });
 
-    amqp.connect(amqpUrl, function (error0, connection) {
-        if (error0) {
-            logger.error(error0)
-            throw error0;
-        }
         connection.createChannel(function (error1, channel) {
             if (error1) {
                 logger.error(error1)
@@ -99,7 +79,7 @@ http.createServer(function (request, response) {
                     message: "Stop AMQP connection"
                 });
                 connection.close();
-            }, 0);
+            }, 2000);
         });
     });
 
