@@ -93,6 +93,13 @@ http.createServer(function (request, response) {
             }, {
                 noAck: true
             });
+            setTimeout(function () {
+                logger.log({
+                    level: 'info',
+                    message: "Stop AMQP connection"
+                });
+                connection.close();
+            }, 0);
         });
     });
 
